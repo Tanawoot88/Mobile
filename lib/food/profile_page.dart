@@ -1,37 +1,39 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:test/food/plaform.dart';
 
-class ProfilePage extends StatefulWidget {
-  static const routeName = "/profile";
+class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  _ProfilePageState createState() => _ProfilePageState();
-}
-
-class _ProfilePageState extends State<ProfilePage> {
-  @override
   Widget build(BuildContext context) {
-    return
-      Container(
-        child: SafeArea(
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ClipRRect(
-                    borderRadius: BorderRadius.circular(80.0),
-                    child: Container(
-                      width: 160.0,
-                      height: 160.0,
-                      child: Image.asset('assets/images/profile.jpg'),
-                    )
-                ),
-                Text("Tanawoot Samerjai", style: Theme.of(context).textTheme.headline1,),
-                Text("samerjai_t@silpakorn.edu", style: Theme.of(context).textTheme.bodyText2,)
-              ],
+    return SizedBox.expand(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          /*CircleAvatar(
+            radius: 90.0,
+            backgroundImage: AssetImage('${kIsWeb ? 'assets/' : ''}assets/images/profile.png'),
+          ),*/
+          ClipRRect(
+            borderRadius: BorderRadius.circular(90.0),
+            child: Container(
+              width: 180.0,
+              height: 180.0,
+              child: PlatformAwareAssetImage(
+                assetPath: 'assets/images/profile.jpg',
+              ),
             ),
           ),
-        ),
-      );
+          SizedBox(height: 24.0),
+          Text('Tanawoot Samerjai',
+              style: Theme.of(context).textTheme.headline1),
+          SizedBox(height: 8.0),
+          Text('samerjai_t@silpakorn.edu', style: TextStyle(fontSize: 20.0)),
+        ],
+      ),
+    );
   }
 }

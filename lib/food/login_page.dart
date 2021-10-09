@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:test/food/home_page.dart';
-
-
+import 'home_page.dart';
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/login';
@@ -13,8 +11,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  String _input = '';
-  String _PIN = '123456';
+  static const pin = '123456';
+  var input = '';
 
   @override
   Widget build(BuildContext context) {
@@ -22,77 +20,80 @@ class _LoginPageState extends State<LoginPage> {
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            begin: Alignment.topRight,
-            end: Alignment.bottomLeft,
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            /*stops: [
+              0.0,
+              0.95,
+              1.0,
+            ],*/
             colors: [
-              Color(0xff000f5c),
-              Color(0xff6c83bb),
-              Color(0xff304bac)
+              Colors.white,
+              //Color(0xFFD8D8D8),
+              //Color(0xFFAAAAAA),
+              Theme.of(context).colorScheme.background.withOpacity(0.5),
+              //Theme.of(context).colorScheme.background.withOpacity(0.6),
+              //Colors.white,
             ],
           ),
         ),
         child: SafeArea(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Icon(Icons.lock_outline, size: 80, color: Colors.black.withOpacity(0.4),),
-                    Text("LOGIN", style: Theme.of(context).textTheme.headline1,),
-                    Text("Enter PIN to login", style: Theme.of(context).textTheme.bodyText2,),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          for(int i=0;i<_input.length;++i)
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Container(
-                                width: 25.0,
-                                height: 25.0,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black
-                                ),
-                              ),
-                            ),
-                          for(int i=0;i<6-_input.length;++i)
-                            Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Container(
-                                width: 25.0,
-                                height: 25.0,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    color: Colors.black.withOpacity(0.4)
-                                ),
-                              ),
-                            ),
-                        ],),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.lock_outline,
+                          size: 90.0,
+                          color: Theme.of(context).textTheme.headline1?.color,
+                        ),
+                        Text(
+                          'LOGIN',
+                          style: Theme.of(context).textTheme.headline1,
+                        ),
+                        SizedBox(height: 6.0),
+                        Text(
+                          'Enter PIN to login',
+                          style: Theme.of(context).textTheme.bodyText2,
+                        )
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Column(
-                        children: [
-                          [1, 2, 3],
-                          [4, 5, 6],
-                          [7, 8, 9],
-                          [-2, 0, -1],
-                        ].map((row) => Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: row.map((e) => LoginButton(
-                            number: e,
-                            onClick: () { _handleClickButton(e);},
-                          )).toList(),
-                        )).toList(),
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        for (var i = 0; i < input.length; i++)
+                          Container(
+                            margin: EdgeInsets.all(4.0),
+                            width: 24.0,
+                            height: 24.0,
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primary,
+                                shape: BoxShape.circle),
+                          ),
+                        for (var i = input.length; i < 6; i++)
+                          Container(
+                            margin: EdgeInsets.all(4.0),
+                            width: 24.0,
+                            height: 24.0,
+                            decoration: BoxDecoration(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.2),
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                      ],
                     )
                   ],
                 ),
               ),
+              _buildNumPad(),
             ],
           ),
         ),
@@ -100,24 +101,59 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _handleClickButton(int num){
+  Widget _buildNumPad() {
+    return Container(
+      padding: EdgeInsets.all(16.0),
+      child: Column(
+        children: [
+          [1, 2, 3],
+          [4, 5, 6],
+          [7, 8, 9],
+          [-2, 0, -1],
+        ].map((row) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: row.map((item) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: LoginButton(
+                  number: item,
+                  onClick: () {
+                    _handleClickButton(item);
+                  },
+                ),
+              );
+            }).toList(),
+          );
+        }).toList(),
+      ),
+    );
+  }
+
+  void _handleClickButton(int num) {
+    print('You pressed $num');
+
     setState(() {
-      if(num == -1){
-        if(_input.length > 0)
-          _input = _input.substring(0, _input.length - 1);
-      }else{
-        _input = "$_input$num";
+      if (num == -1) {
+        if (input.length > 0) input = input.substring(0, input.length - 1);
+      } else {
+        input = '$input$num';
       }
-      if(_input.length == 6){
-        if(_input == _PIN){
-          Navigator.pushReplacementNamed(context, HomePage.routeName );
-        }else{
-          _showMaterialDialog("ERROR !", "Invalid PIN. Please try again.");
+
+      if (input.length == pin.length) {
+        if (input == pin) {
+          /*Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HomePage()),
+          );*/
+          Navigator.pushReplacementNamed(context, HomePage.routeName);
+        } else {
+          _showMaterialDialog('ERROR', 'Invalid PIN. Please try again.');
         }
-        _input = '';
+
+        input = '';
       }
     });
-    print(_input);
   }
 
   void _showMaterialDialog(String title, String msg) {
@@ -126,11 +162,13 @@ class _LoginPageState extends State<LoginPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(title),
-          content: Text(msg),
+          content: Text(msg, style: Theme.of(context).textTheme.bodyText2),
           actions: [
+            // ปุ่ม OK ใน dialog
             TextButton(
               child: const Text('OK'),
               onPressed: () {
+                // ปิด dialog
                 Navigator.of(context).pop();
               },
             ),
@@ -139,7 +177,6 @@ class _LoginPageState extends State<LoginPage> {
       },
     );
   }
-
 }
 
 class LoginButton extends StatelessWidget {
@@ -147,34 +184,41 @@ class LoginButton extends StatelessWidget {
   final Function() onClick;
 
   const LoginButton({
-    Key? key,
     required this.number,
     required this.onClick,
+    Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          customBorder: CircleBorder(),
-          onTap: number == -2 ? null :
-          onClick,
-          child: number == -1 ? Container(width: 80.0, height: 80.0,child: Icon(Icons.backspace_outlined, size: 28,)): Container(
-            width: 80.0,
-            height: 80.0,
-            decoration: number == -2 ? null :
-            BoxDecoration(
-                shape: BoxShape.circle,
-                //border: Border.all(width: 2.0, color: Colors.black),
-                color: Colors.white.withOpacity(0.15)
-            ),
-            child: number == -2 ? SizedBox.shrink() :
-            Center(child: Text('$number', style: Theme.of(context).textTheme.bodyText1, )
-            ),
+    return InkWell(
+      customBorder: CircleBorder(),
+      onTap: number == -2 ? null : onClick,
+      child: Container(
+        width: 75.0,
+        height: 75.0,
+        decoration: number == -2
+            ? null
+            : BoxDecoration(
+          shape: BoxShape.circle,
+          color: Colors.white.withOpacity(0.5),
+          border: Border.all(
+            width: 3.0,
+            color: Theme.of(context).textTheme.headline1!.color!,
           ),
+        ),
+        child: Center(
+          child: number >= 0
+              ? Text(
+            '$number', // number.toString()
+            style: Theme.of(context).textTheme.headline6,
+          )
+              : (number == -1
+              ? Icon(
+            Icons.backspace_outlined,
+            size: 28.0,
+          )
+              : SizedBox.shrink()),
         ),
       ),
     );

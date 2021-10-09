@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:test/food/food_page.dart';
 import 'package:test/food/profile_page.dart';
+import 'food_page.dart';
 
 class HomePage extends StatefulWidget {
   static const routeName = '/home';
