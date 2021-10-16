@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_page.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   static const routeName = '/login';
@@ -11,7 +13,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  static const pin = '123456';
+
   var input = '';
 
   @override
@@ -31,7 +33,11 @@ class _LoginPageState extends State<LoginPage> {
               Colors.white,
               //Color(0xFFD8D8D8),
               //Color(0xFFAAAAAA),
-              Theme.of(context).colorScheme.background.withOpacity(0.5),
+              Theme
+                  .of(context)
+                  .colorScheme
+                  .background
+                  .withOpacity(0.5),
               //Theme.of(context).colorScheme.background.withOpacity(0.6),
               //Colors.white,
             ],
@@ -50,16 +56,26 @@ class _LoginPageState extends State<LoginPage> {
                         Icon(
                           Icons.lock_outline,
                           size: 90.0,
-                          color: Theme.of(context).textTheme.headline1?.color,
+                          color: Theme
+                              .of(context)
+                              .textTheme
+                              .headline1
+                              ?.color,
                         ),
                         Text(
                           'LOGIN',
-                          style: Theme.of(context).textTheme.headline1,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .headline1,
                         ),
                         SizedBox(height: 6.0),
                         Text(
                           'Enter PIN to login',
-                          style: Theme.of(context).textTheme.bodyText2,
+                          style: Theme
+                              .of(context)
+                              .textTheme
+                              .bodyText2,
                         )
                       ],
                     ),
@@ -72,7 +88,10 @@ class _LoginPageState extends State<LoginPage> {
                             width: 24.0,
                             height: 24.0,
                             decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primary,
+                                color: Theme
+                                    .of(context)
+                                    .colorScheme
+                                    .primary,
                                 shape: BoxShape.circle),
                           ),
                         for (var i = input.length; i < 6; i++)
@@ -81,7 +100,8 @@ class _LoginPageState extends State<LoginPage> {
                             width: 24.0,
                             height: 24.0,
                             decoration: BoxDecoration(
-                              color: Theme.of(context)
+                              color: Theme
+                                  .of(context)
                                   .colorScheme
                                   .primary
                                   .withOpacity(0.2),
@@ -140,44 +160,64 @@ class _LoginPageState extends State<LoginPage> {
         input = '$input$num';
       }
 
-      if (input.length == pin.length) {
-        if (input == pin) {
-          /*Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HomePage()),
-          );*/
-          Navigator.pushReplacementNamed(context, HomePage.routeName);
-        } else {
-          _showMaterialDialog('ERROR', 'Invalid PIN. Please try again.');
-        }
-
-        input = '';
+      if (input.length == 6) {
+        _api();
       }
     });
   }
 
-  void _showMaterialDialog(String title, String msg) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(msg, style: Theme.of(context).textTheme.bodyText2),
-          actions: [
-            // ปุ่ม OK ใน dialog
-            TextButton(
-              child: const Text('OK'),
-              onPressed: () {
-                // ปิด dialog
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+  void _api() async {
+    var url = Uri.parse('https://cpsu-test-api.herokuapp.com/login');
+    var response = await http.post(url, body: {
+      'pin': input
+    });
+    if (response.statusCode == 200) {
+      Map<String, dynamic> jsonBody = json.decode(response.body);
+      String status = jsonBody['status'];
+      String message = jsonBody['data'];
+      bool data = jsonBody['data'];
+      print('Status: $status');
+      print('Message: $message');
+      print('Data: $data');
+      if (data) {
+        Navigator.pushReplacementNamed(context, HomePage.routeName);
+      }
+      else {
+        _showMaterialDialog('ERROR', 'Invalid PIN. Please try again.');
+
+      setState(() {
+        input = '';
+      });
+
+    }
   }
 }
+
+
+void _showMaterialDialog(String title, String msg) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: Text(msg, style: Theme
+            .of(context)
+            .textTheme
+            .bodyText2),
+        actions: [
+          // ปุ่ม OK ใน dialog
+          TextButton(
+            child: const Text('OK'),
+            onPressed: () {
+              // ปิด dialog
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
+      );
+    },
+  );
+}}
 
 class LoginButton extends StatelessWidget {
   final int number;
@@ -204,14 +244,21 @@ class LoginButton extends StatelessWidget {
           color: Colors.white.withOpacity(0.5),
           border: Border.all(
             width: 3.0,
-            color: Theme.of(context).textTheme.headline1!.color!,
+            color: Theme
+                .of(context)
+                .textTheme
+                .headline1!
+                .color!,
           ),
         ),
         child: Center(
           child: number >= 0
               ? Text(
             '$number', // number.toString()
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme
+                .of(context)
+                .textTheme
+                .headline6,
           )
               : (number == -1
               ? Icon(
